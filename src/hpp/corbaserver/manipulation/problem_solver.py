@@ -426,6 +426,15 @@ class ProblemSolver (object):
         return self.client.basic.problem.selectPathProjector \
             (pathProjectorType, tolerance)
 
+    def prepareSolveStepByStep (self):
+        return self.client.basic.problem.prepareSolveStepByStep ()
+
+    def executeOneStep (self):
+        return self.client.basic.problem.executeOneStep ()
+
+    def finishSolveStepByStep (self):
+        return self.client.basic.problem.finishSolveStepByStep ()
+
     ## Solve the problem of corresponding ChppPlanner object
     def solve (self):
         return self.client.basic.problem.solve ()
@@ -482,6 +491,14 @@ class ProblemSolver (object):
     ## Get nodes of the roadmap.
     def nodes(self):
 	return self.client.basic.problem.nodes ()
+
+    # the configuration of the node nodeId
+    def node(self,nodeId):
+      return self.client.basic.problem.node(nodeId)
+
+    ## Number of nodes
+    def numberNodes (self):
+        return self.client.basic.problem.numberNodes ()
 
     ## Number of edges
     def numberEdges (self):
