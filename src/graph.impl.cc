@@ -29,6 +29,7 @@
 #include <hpp/manipulation/graph/node.hh>
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/manipulation/graph/edge.hh>
+#include <hpp/manipulation/graph/statistics.hh>
 
 #include "graph.impl.hh"
 
@@ -209,43 +210,55 @@ namespace hpp {
         return edge->id ();
       }
 
-      void Graph::setLevelSetConstraints (const Long edgeId,
-          const hpp::Names_t& numericalConstraintNames,
-          const hpp::Names_t& passiveDofsNames,
-          const hpp::Names_t& lockedDofNames)
+      void Graph::setLevelSetFoliation (const Long edgeId,
+          const hpp::Names_t& condNC, const hpp::Names_t& condLJ,
+          const hpp::Names_t& paramNC, const hpp::Names_t& paramLJ)
         throw (hpp::Error)
       {
         graph::LevelSetEdgePtr_t edge;
+        ConfigProjectorPtr_t cond, param;
         try {
-          edge = HPP_DYNAMIC_PTR_CAST(graph::LevelSetEdge, graph::GraphComponent::get(edgeId).lock());
-        } catch (std::out_of_range& e) {
-          throw Error (e.what());
-        }
-        if (!edge)
-          throw Error ("The edge could not be found.");
-        try {
-          std::vector <std::string> pdofNames = expandPassiveDofsNameVector
-            (passiveDofsNames, numericalConstraintNames.length ());
-          for (CORBA::ULong i=0; i<numericalConstraintNames.length (); ++i) {
-            std::string name (numericalConstraintNames [i]),
-              pdofName (pdofNames[i]);
-            edge->insertConfigConstraint (
-                  NumericalConstraint::create (
-                    problemSolver_->numericalConstraint(name),
-                    problemSolver_->comparisonType (name)
-                    ),
-                  problemSolver_->passiveDofs (pdofNames [i])
-                  );
+          edge = HPP_DYNAMIC_PTR_CAST(graph::LevelSetEdge,
+              graph::GraphComponent::get(edgeId).lock());
+          if (!edge) throw Error ("The edge could not be found.");
+
+          cond  = ConfigProjector::create (problemSolver_->robot (), "f_cond_" + edge->name (),
+              problemSolver_->errorThreshold (), problemSolver_->maxIterations ());
+          param = ConfigProjector::create (problemSolver_->robot (), "f_param_" + edge->name (),
+              problemSolver_->errorThreshold (), problemSolver_->maxIterations ());
+
+          for (CORBA::ULong i=0; i<condNC.length (); ++i) {
+            std::string name (condNC [i]);
+            cond->add (NumericalConstraint::create (
+                  problemSolver_->numericalConstraint(name),
+                  problemSolver_->comparisonType (name)
+                  ));
           }
-          for (CORBA::ULong i=0; i<lockedDofNames.length (); ++i) {
-            std::string name (lockedDofNames [i]);
-            edge->insertConfigConstraint
-              (problemSolver_->get <LockedJointPtr_t> (name));
+          for (CORBA::ULong i=0; i<condLJ.length (); ++i) {
+            std::string name (condLJ [i]);
+            cond->add (problemSolver_->get <LockedJointPtr_t> (name));
           }
+
+          for (CORBA::ULong i=0; i<paramNC.length (); ++i) {
+            std::string name (paramNC [i]);
+            param->add (NumericalConstraint::create (
+                  problemSolver_->numericalConstraint(name),
+                  problemSolver_->comparisonType (name)
+                  ));
+          }
+          for (CORBA::ULong i=0; i<paramLJ.length (); ++i) {
+            std::string name (paramLJ [i]);
+            param->add (problemSolver_->get <LockedJointPtr_t> (name));
+          }
+
+          graph::Foliation f;
+          f.condition (cond);
+          f.parametrizer (param);
+
+          edge->histogram (graph::LeafHistogram::create (f));
           RoadmapPtr_t roadmap = HPP_DYNAMIC_PTR_CAST (Roadmap, problemSolver_->roadmap());
           if (!roadmap)
             throw Error ("The roadmap is not of type hpp::manipulation::Roadmap.");
-          edge->buildHistogram ();
           roadmap->insertHistogram (edge->histogram ());
         } catch (std::exception& err) {
           throw Error (err.what());

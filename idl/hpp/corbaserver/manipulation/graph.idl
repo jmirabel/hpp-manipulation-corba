@@ -81,7 +81,7 @@ module hpp {
         /// \param passiveDofsNames array of names of vector of passive dofs in the ProblemSolver map.
         /// \note If passiveDofsNames is a shorter list than constraintNames, passiveDofsNames is extended with an empty string,
         ///       which corresponds to an empty vector of passive dofs.
-        void setLevelSetConstraints (in long edgeId, in Names_t numericalConstraintNames, in Names_t passiveDofsNames, in Names_t lockedDofNames)
+        void setLevelSetFoliation (in long edgeId, in Names_t condNC, in Names_t condLJ, in Names_t paramNC, in Names_t paramLJ)
           raises (Error);
 
         /// Set the numerical constraints of a component.

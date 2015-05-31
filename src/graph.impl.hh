@@ -77,10 +77,11 @@ namespace hpp {
                                      const bool isInNodeFrom)
             throw (hpp::Error);
 
-          virtual void setLevelSetConstraints (const Long edgeId,
-              const hpp::Names_t& numericalConstraintNames,
-              const hpp::Names_t& passiveDofsNames,
-              const hpp::Names_t& lockedDofNames)
+          virtual void setLevelSetFoliation (const Long edgeId,
+                                             const hpp::Names_t& condNC,
+                                             const hpp::Names_t& condLJ,
+                                             const hpp::Names_t& paramNC,
+                                             const hpp::Names_t& paramLJ)
             throw (hpp::Error);
 
           virtual void setNumericalConstraints (const Long graphComponentId,

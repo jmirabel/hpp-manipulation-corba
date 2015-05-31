@@ -188,25 +188,8 @@ class ConstraintGraph (object):
     #  \param passiveJoints array of names of vector of passive dofs in the ProblemSolver map.
     #  \note If passiveDofsNames is a shorter list than numConstraints, passiveDofsNames is extended with an empty string,
     #        which corresponds to an empty vector of passive dofs.
-    def setLevelSetConstraints (self, edge, grasp = None, \
-            pregrasp = None, lockDof = [], numConstraints = [], passiveJoints = []):
-        nc = numConstraints [:]
-        pdofs = ["" for i in range (len(numConstraints))]
-        pdofs [:len(passiveJoints)] = passiveJoints [:]
-        if grasp is not None:
-            if type(grasp) is str:
-                grasp = [grasp]
-            for g in grasp:
-                nc.extend (self.grasps [g][0])
-                pdofs.extend (self.grasps [g][1])
-        if pregrasp is not None:
-            if type(pregrasp) is str:
-                pregrasp = [pregrasp]
-            for g in pregrasp:
-                nc.extend (self.pregrasps [g][0])
-                pdofs.extend (self.pregrasps [g][1])
-
-        self.graph.setLevelSetConstraints (self.edges [edge], nc, [], lockDof)
+    def setLevelSetFoliation (self, edge, condNC = [], condLJ = [], paramNC = [], paramLJ = []):
+        self.graph.setLevelSetFoliation (self.edges [edge], condNC, condLJ, paramNC, paramLJ)
 
     ## Add entry to the local dictionnary
     # \param text plain text
