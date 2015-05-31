@@ -369,33 +369,6 @@ namespace hpp {
         }
       }
 
-      void Graph::statOnConstraint (hpp::ID IDedge)
-        throw (hpp::Error)
-      {
-        graph::EdgePtr_t edge;
-        size_t id (IDedge);
-        try {
-          edge = HPP_DYNAMIC_PTR_CAST(graph::Edge,
-              graph::GraphComponent::get(id).lock ());
-        } catch (std::exception& e ) {
-          throw Error (e.what());
-        }
-        if (!edge) {
-          std::stringstream ss;
-          ss << "ID " << id << " is not an edge";
-          std::string errmsg = ss.str();
-          throw Error (errmsg.c_str());
-        }
-        try {
-          RoadmapPtr_t roadmap = HPP_DYNAMIC_PTR_CAST (Roadmap, problemSolver_->roadmap());
-          if (!roadmap)
-            throw Error ("The roadmap is not of type hpp::manipulation::Roadmap.");
-          roadmap->statAddFoliation (graph_->configConstraint (edge));
-        } catch (std::exception& e) {
-          throw Error (e.what());
-        }
-      }
-
       void Graph::getNode (const hpp::floatSeq& dofArray, ID_out output)
         throw (hpp::Error)
       {

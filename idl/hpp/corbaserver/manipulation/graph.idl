@@ -108,11 +108,6 @@ module hpp {
         void setLockedDofConstraints (in long graphComponentId, in Names_t constraintNames)
           raises (Error);
 
-        /// Activate statistic analysis for this sequence of edges.
-        /// \param IDedge edge ID.
-        void statOnConstraint (in ID IDedge)
-          raises (Error);
-
         /// Get the node corresponding to the state of the configuration.
         /// \param dofArray the configuration.
         /// \return the ID corresponding to the node.
