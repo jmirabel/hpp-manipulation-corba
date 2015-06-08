@@ -63,6 +63,9 @@ namespace hpp {
                                            GraphElements_out out_elmts)
             throw (hpp::Error);
 
+          virtual void getGraph (GraphComp_out graph, GraphElements_out elmts)
+            throw (hpp::Error);
+
           virtual Long getWaypoint (const Long edgeId, hpp::ID_out nodeId)
             throw (hpp::Error);
 

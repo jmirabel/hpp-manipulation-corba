@@ -26,6 +26,7 @@ module hpp {
   struct GraphComp {
     string name;
     long id;
+    long start, end;
   };
   typedef sequence <GraphComp> GraphComps_t;
   struct GraphElements {

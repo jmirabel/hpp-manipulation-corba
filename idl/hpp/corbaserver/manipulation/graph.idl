@@ -67,6 +67,11 @@ module hpp {
         long getWaypoint (in long edgeId, out ID nodeId)
           raises (Error);
 
+        /// Get full graph
+        /// \return a structure with all the IDs and names
+        void getGraph (out GraphComp graph, out GraphElements elmts)
+          raises (Error);
+
         /// Add an edge of type LevelSetEdge between two nodes.
         /// \param nodeFromId, nodeToId the ID of the ends of the new edge.
         /// \param edgeName name of the new edge.

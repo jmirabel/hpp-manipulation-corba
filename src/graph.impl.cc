@@ -173,6 +173,58 @@ namespace hpp {
         out_elmts->edges = e;
       }
 
+      void Graph::getGraph (GraphComp_out graph_out, GraphElements_out elmts)
+        throw (hpp::Error)
+      {
+        GraphComps_t comp_n, comp_e;
+        GraphComp comp_g, current;
+
+        graph::NodePtr_t n;
+        graph::EdgePtr_t e;
+
+        CORBA::ULong len_edges = 0;
+        CORBA::ULong len_nodes = 0;
+        try {
+          // Set the graph values
+          graph_out = new GraphComp ();
+          graph_out->name = graph_->name ().c_str();
+          graph_out->id = graph_->id ();
+
+          for (int i = 0; i < graph::GraphComponent::components().size (); ++i) {
+            if (i == graph_->id ()) continue;
+            graph::GraphComponentPtr_t gcomponent = graph::GraphComponent::get(i).lock();
+            if (!gcomponent) continue;
+            current.name = gcomponent->name ().c_str ();
+            current.id   = gcomponent->id ();
+            n = HPP_DYNAMIC_PTR_CAST(graph::Node, gcomponent);
+            e = HPP_DYNAMIC_PTR_CAST(graph::Edge, gcomponent);
+            if (n) {
+              comp_n.length (len_nodes + 1);
+              comp_n[len_nodes] = current;
+              len_nodes++;
+            } else if (e) {
+              comp_e.length (len_edges + 1);
+              graph::WaypointEdgePtr_t we = HPP_DYNAMIC_PTR_CAST (
+                  graph::WaypointEdge, e);
+              if (we) {
+                current.start = we->waypoint<graph::Edge>()->to ()->id ();
+                current.end = e->to ()->id ();
+              } else {
+                current.start = e->from ()->id ();
+                current.end = e->to ()->id ();
+              }
+              comp_e[len_edges] = current;
+              len_edges++;
+            }
+          }
+          elmts = new GraphElements;
+          elmts->nodes = comp_n;
+          elmts->edges = comp_e;
+        } catch (std::out_of_range& e) {
+          throw Error (e.what());
+        }
+      }
+
       Long Graph::getWaypoint (const Long edgeId, hpp::ID_out nodeId)
         throw (hpp::Error)
       {
