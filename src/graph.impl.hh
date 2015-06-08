@@ -117,6 +117,10 @@ namespace hpp {
           virtual void display (const char* filename)
             throw (hpp::Error);
 
+          virtual void getHistogramValue (ID edgeId, hpp::floatSeq_out freq,
+              hpp::floatSeqSeq_out values)
+            throw (hpp::Error);
+
         private:
           ProblemSolverPtr_t problemSolver_;
           graph::GraphPtr_t graph_;

@@ -146,6 +146,9 @@ module hpp {
 
         void display (in string filename)
           raises (Error);
+
+        void getHistogramValue (in ID edgeId, out floatSeq freq, out floatSeqSeq values)
+          raises (Error);
       }; // interface Graph
     }; // module manipulation
   }; // module corbaserver
