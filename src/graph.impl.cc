@@ -467,6 +467,39 @@ namespace hpp {
         graph_->dotPrint (dotfile);
         dotfile.close();
       }
+
+      void Graph::getHistogramValue (ID edgeId, hpp::floatSeq_out freq,
+          hpp::floatSeqSeq_out values)
+        throw (hpp::Error)
+      {
+	try {
+          graph::LevelSetEdgePtr_t edge =
+            HPP_DYNAMIC_PTR_CAST(graph::LevelSetEdge,
+                graph::GraphComponent::get (edgeId).lock ());
+          if (!edge) throw Error ("The edge could not be found.");
+          graph::LeafHistogramPtr_t hist = edge->histogram ();
+	  floatSeq* _freq = new floatSeq ();
+          floatSeqSeq *_values = new floatSeqSeq ();
+          _freq->length (hist->numberOfBins ());
+          _values->length (hist->numberOfBins ());
+          size_type i = 0;
+          for (graph::LeafHistogram::const_iterator it = hist->begin ();
+              it != hist->end (); ++it) {
+            (*_freq)[i] = it->freq ();
+            floatSeq v;
+            const vector_t& offset = it->value();
+            v.length (offset.size());
+            for (size_type j = 0; j < offset.size(); ++j)
+              v[j] = offset [j];
+            (*_values)[i] = v;
+            i++;
+          }
+          freq = _freq;
+          values = _values;
+	} catch (const std::exception& exc) {
+	  throw Error (exc.what ());
+	}
+      }
     } // namespace impl
   } // namespace manipulation
 } // namespace hpp
