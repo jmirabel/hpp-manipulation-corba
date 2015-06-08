@@ -32,9 +32,13 @@ SET(CUSTOM_HEADER_DIR hpp/corbaserver/manipulation)
 
 SETUP_PROJECT ()
 
+CONFIG_FILES (include/hpp/corbaserver/manipulation/doc.hh)
+
 SET(${PROJECT_NAME}_HEADERS
   include/hpp/corbaserver/manipulation/server.hh
+  include/hpp/corbaserver/manipulation/client.hh
   include/hpp/corbaserver/manipulation/fwd.hh
+  ${CMAKE_BINARY_DIR}/include/hpp/corbaserver/manipulation/doc.hh
 )
 
 # Activate hpp-util logging if requested
@@ -52,7 +56,5 @@ ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
 
 PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
 ADD_SUBDIRECTORY(src)
-
-CONFIG_FILES (include/hpp/corbaserver/manipulation/doc.hh)
 
 SETUP_PROJECT_FINALIZE()
