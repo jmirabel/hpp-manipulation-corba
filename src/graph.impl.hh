@@ -43,6 +43,9 @@ namespace hpp {
           virtual Long createSubGraph(const char* subgraphName)
             throw (hpp::Error);
 
+          virtual void setTargetNodeList(const ID subgraph, const hpp::IDseq& nodes)
+            throw (hpp::Error);
+
           virtual Long createNode (const Long subGraphId,
                                    const char* nodeName)
             throw (hpp::Error);

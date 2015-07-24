@@ -26,6 +26,7 @@
 #include <hpp/manipulation/problem.hh>
 #include <hpp/manipulation/roadmap.hh>
 #include <hpp/manipulation/graph/node-selector.hh>
+#include <hpp/manipulation/graph/guided-node-selector.hh>
 #include <hpp/manipulation/graph/node.hh>
 #include <hpp/manipulation/graph/graph.hh>
 #include <hpp/manipulation/graph/edge.hh>
@@ -84,8 +85,32 @@ namespace hpp {
         if (!graph_)
           throw Error ("You should create the graph"
               " before creating subgraph.");
-        graph::NodeSelectorPtr_t ns = graph_->createNodeSelector(subgraphName);
+        graph::GuidedNodeSelectorPtr_t ns = graph::GuidedNodeSelector::create
+          (subgraphName, problemSolver_->roadmap ());
+        graph_->nodeSelector(ns);
         return ns->id ();
+      }
+
+      void Graph::setTargetNodeList(const ID subgraph, const hpp::IDseq& nodes)
+        throw (hpp::Error)
+      {
+        graph::GuidedNodeSelectorPtr_t ns;
+        try {
+          ns = HPP_DYNAMIC_PTR_CAST(graph::GuidedNodeSelector,
+              graph::GraphComponent::get(subgraph).lock());
+          if (!ns) throw Error ("Not a subgraph");
+          graph::Nodes_t nl;
+          graph::NodePtr_t node;
+          for (int i = 0; i < nodes.length(); ++i) {
+            node = HPP_DYNAMIC_PTR_CAST(graph::Node,
+                graph::GraphComponent::get(nodes[i]).lock());
+            if (!node) throw Error ("The nodes could not be found.");
+            nl.push_back (node);
+          }
+          ns->setNodeList (nl);
+        } catch (std::out_of_range& e) {
+          throw Error (e.what());
+        }
       }
 
       Long Graph::createNode(const Long subgraphId, const char* nodeName)

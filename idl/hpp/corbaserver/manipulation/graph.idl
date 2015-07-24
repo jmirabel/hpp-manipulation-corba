@@ -34,6 +34,9 @@ module hpp {
         long createSubGraph(in string subgraphName)
           raises (Error);
 
+        void setTargetNodeList(in ID subgraph, in IDseq nodes)
+          raises (Error);
+
         /// Add a node to the graph.
         /// \param subGraphId is the ID of the subgraph to which the node should be added.
         /// \param nodeName the name of the new node.
