@@ -185,8 +185,6 @@ namespace hpp {
         if (!edge)
           throw Error ("The edge could not be found.");
         graph::EdgePtr_t waypoint = edge->waypoint <graph::Edge> ();
-        waypoint->name (edge->name () + "_waypoint");
-        waypoint->to ()->name (edge->name () + "_waypoint_node");
         nodeId = waypoint->to ()->id ();
         return waypoint->id ();
       }
