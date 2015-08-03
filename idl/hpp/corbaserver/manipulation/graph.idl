@@ -72,6 +72,14 @@ module hpp {
         void getGraph (out GraphComp graph, out GraphElements elmts)
           raises (Error);
 
+        /// Get config projector statistics
+        /// \param output config, path object containing the number of success
+        ///                       and the number of times a config projector has
+        ///                       been called.
+        /// \return true if the given has a config projector, false otherwise
+        boolean getConfigProjectorStats (in ID elmt, out ConfigProjStat config, out ConfigProjStat path)
+          raises (Error);
+
         /// Add an edge of type LevelSetEdge between two nodes.
         /// \param nodeFromId, nodeToId the ID of the ends of the new edge.
         /// \param edgeName name of the new edge.

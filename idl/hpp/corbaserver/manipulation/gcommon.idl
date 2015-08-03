@@ -23,6 +23,11 @@ module hpp {
   typedef long ID;
   typedef sequence<ID> IDseq;
 
+  struct ConfigProjStat {
+    long success;
+    long error;
+    long nbObs;
+  };
   struct GraphComp {
     string name;
     long id;

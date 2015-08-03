@@ -66,6 +66,10 @@ namespace hpp {
           virtual void getGraph (GraphComp_out graph, GraphElements_out elmts)
             throw (hpp::Error);
 
+          virtual bool getConfigProjectorStats (ID elmt, ConfigProjStat_out config,
+              ConfigProjStat_out path)
+            throw (hpp::Error);
+
           virtual Long getWaypoint (const Long edgeId, hpp::ID_out nodeId)
             throw (hpp::Error);
 

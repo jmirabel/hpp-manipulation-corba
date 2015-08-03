@@ -225,6 +225,53 @@ namespace hpp {
         }
       }
 
+      bool Graph::getConfigProjectorStats (ID elmt, ConfigProjStat_out config,
+          ConfigProjStat_out path)
+        throw (hpp::Error)
+      {
+        if (!graph_)
+          throw Error ("You should create the graph");
+        graph::NodePtr_t node;
+        graph::EdgePtr_t edge;
+        try {
+          node = HPP_DYNAMIC_PTR_CAST(graph::Node, graph::GraphComponent::get(elmt).lock());
+          edge = HPP_DYNAMIC_PTR_CAST(graph::Edge, graph::GraphComponent::get(elmt).lock());
+        } catch (std::out_of_range& e) {
+          throw Error (e.what());
+        }
+        if (node) {
+          ConfigProjectorPtr_t proj =
+            graph_->configConstraint (node)->configProjector ();
+          if (proj) {
+            config.success = proj->statistics().nbSuccess();
+            config.error = proj->statistics().nbFailure();
+            config.nbObs = proj->statistics().numberOfObservations();
+          }
+          path.success = 0;
+          path.error = 0;
+          path.nbObs = 0;
+          return true;
+        } else if (edge) {
+          ConfigProjectorPtr_t proj =
+            graph_->configConstraint (edge)->configProjector ();
+          if (proj) {
+            config.success = proj->statistics().nbSuccess();
+            config.error = proj->statistics().nbFailure();
+            config.nbObs = proj->statistics().numberOfObservations();
+          }
+          proj = graph_->pathConstraint (edge)->configProjector ();
+          if (proj) {
+            path.success = proj->statistics().nbSuccess();
+            path.error = proj->statistics().nbFailure();
+            path.nbObs = proj->statistics().numberOfObservations();
+          }
+          return true;
+        } else {
+          throw Error ("The ID does not exist.");
+        }
+        return false;
+      }
+
       Long Graph::getWaypoint (const Long edgeId, hpp::ID_out nodeId)
         throw (hpp::Error)
       {
