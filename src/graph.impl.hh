@@ -117,6 +117,12 @@ namespace hpp {
 	(const hpp::floatSeq& dofArray, ID nodeId, hpp::floatSeq_out error)
 	  throw (hpp::Error);
 
+	virtual void displayNodeConstraints
+	(hpp::ID nodeId, CORBA::String_out constraints) throw (Error);
+
+	virtual void displayEdgeConstraints
+	(hpp::ID edgeId, CORBA::String_out constraints) throw (Error);
+
           virtual void display (const char* filename)
             throw (hpp::Error);
 

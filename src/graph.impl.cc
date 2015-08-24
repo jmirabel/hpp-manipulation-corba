@@ -40,6 +40,7 @@ namespace hpp {
       using core::SteeringMethodStraight;
       using core::WeighedDistance;
       using core::WeighedDistancePtr_t;
+      using CORBA::ULong;
 
       std::vector <std::string> expandPassiveDofsNameVector (
           const hpp::Names_t& names, const size_t& s)
@@ -76,7 +77,7 @@ namespace hpp {
         graph_->errorThreshold (problemSolver_->errorThreshold ());
         problemSolver_->constraintGraph (graph_);
         problemSolver_->problem()->constraintGraph (graph_);
-        return graph_->id ();
+        return (Long) graph_->id ();
       }
 
       Long Graph::createSubGraph(const char* subgraphName)
@@ -88,7 +89,7 @@ namespace hpp {
         graph::GuidedNodeSelectorPtr_t ns = graph::GuidedNodeSelector::create
           (subgraphName, problemSolver_->roadmap ());
         graph_->nodeSelector(ns);
-        return ns->id ();
+        return (Long) ns->id ();
       }
 
       void Graph::setTargetNodeList(const ID subgraph, const hpp::IDseq& nodes)
@@ -128,7 +129,7 @@ namespace hpp {
               " before creating nodes.");
 
         graph::NodePtr_t node = ns->createNode (nodeName);
-        return node->id ();
+        return (Long) node->id ();
       }
 
       Long Graph::createEdge(const Long nodeFromId, const Long nodeToId, const char* edgeName, const Long w, const bool isInNodeFrom)
@@ -145,7 +146,7 @@ namespace hpp {
           throw Error ("The nodes could not be found.");
 
         graph::EdgePtr_t edge = from->linkTo (edgeName, to, w, isInNodeFrom);
-        return edge->id ();
+        return (Long) edge->id ();
       }
 
       void Graph::createWaypointEdge(const Long nodeFromId, const Long nodeToId,
@@ -177,22 +178,22 @@ namespace hpp {
 
         GraphComps_t n, e;
         GraphComp gc;
-        e.length (edges.size () + 1);
-        n.length (edges.size ());
+        e.length ((ULong) edges.size () + 1);
+        n.length ((ULong) edges.size ());
         size_t r = 0;
         for (std::list <graph::EdgePtr_t>::const_iterator it = edges.begin ();
             it != edges.end (); it++) {
           gc.name = (*it)->name ().c_str ();
-          gc.id = (*it)->id ();
-          e[r] = gc;
+          gc.id = (Long) (*it)->id ();
+          e[(ULong) r] = gc;
           gc.name = (*it)->to ()->name ().c_str ();
-          gc.id = (*it)->to ()->id ();
-          n[r] = gc;
+          gc.id = (Long) (*it)->to ()->id ();
+          n[(ULong) r] = gc;
           r++;
         }
         gc.name = edge->name ().c_str ();
-        gc.id = edge->id ();
-        e[r] = gc;
+        gc.id = (Long) edge->id ();
+        e[(ULong) r] = gc;
         out_elmts = new GraphElements;
         out_elmts->nodes = n;
         out_elmts->edges = e;
@@ -213,14 +214,15 @@ namespace hpp {
           // Set the graph values
           graph_out = new GraphComp ();
           graph_out->name = graph_->name ().c_str();
-          graph_out->id = graph_->id ();
+          graph_out->id = (Long) graph_->id ();
 
-          for (int i = 0; i < graph::GraphComponent::components().size (); ++i) {
+          for (std::size_t i = 0;
+	       i < graph::GraphComponent::components().size (); ++i) {
             if (i == graph_->id ()) continue;
             graph::GraphComponentPtr_t gcomponent = graph::GraphComponent::get(i).lock();
             if (!gcomponent) continue;
             current.name = gcomponent->name ().c_str ();
-            current.id   = gcomponent->id ();
+            current.id   = (Long) gcomponent->id ();
             n = HPP_DYNAMIC_PTR_CAST(graph::Node, gcomponent);
             e = HPP_DYNAMIC_PTR_CAST(graph::Edge, gcomponent);
             if (n) {
@@ -232,11 +234,11 @@ namespace hpp {
               graph::WaypointEdgePtr_t we = HPP_DYNAMIC_PTR_CAST (
                   graph::WaypointEdge, e);
               if (we) {
-                current.start = we->waypoint<graph::Edge>()->to ()->id ();
-                current.end = e->to ()->id ();
+                current.start = (Long)we->waypoint<graph::Edge>()->to ()->id ();
+                current.end = (Long) e->to ()->id ();
               } else {
-                current.start = e->from ()->id ();
-                current.end = e->to ()->id ();
+                current.start = (Long) e->from ()->id ();
+                current.end = (Long) e->to ()->id ();
               }
               comp_e[len_edges] = current;
               len_edges++;
@@ -268,9 +270,9 @@ namespace hpp {
           ConfigProjectorPtr_t proj =
             graph_->configConstraint (node)->configProjector ();
           if (proj) {
-            config.success = proj->statistics().nbSuccess();
-            config.error = proj->statistics().nbFailure();
-            config.nbObs = proj->statistics().numberOfObservations();
+            config.success = (Long) proj->statistics().nbSuccess();
+            config.error = (Long) proj->statistics().nbFailure();
+            config.nbObs = (Long) proj->statistics().numberOfObservations();
           }
           path.success = 0;
           path.error = 0;
@@ -280,15 +282,15 @@ namespace hpp {
           ConfigProjectorPtr_t proj =
             graph_->configConstraint (edge)->configProjector ();
           if (proj) {
-            config.success = proj->statistics().nbSuccess();
-            config.error = proj->statistics().nbFailure();
-            config.nbObs = proj->statistics().numberOfObservations();
+            config.success = (Long) proj->statistics().nbSuccess();
+            config.error = (Long) proj->statistics().nbFailure();
+            config.nbObs = (Long) proj->statistics().numberOfObservations();
           }
           proj = graph_->pathConstraint (edge)->configProjector ();
           if (proj) {
-            path.success = proj->statistics().nbSuccess();
-            path.error = proj->statistics().nbFailure();
-            path.nbObs = proj->statistics().numberOfObservations();
+            path.success = (Long) proj->statistics().nbSuccess();
+            path.error = (Long) proj->statistics().nbFailure();
+            path.nbObs = (Long) proj->statistics().numberOfObservations();
           }
           return true;
         } else {
@@ -309,8 +311,8 @@ namespace hpp {
         if (!edge)
           throw Error ("The edge could not be found.");
         graph::EdgePtr_t waypoint = edge->waypoint <graph::Edge> ();
-        nodeId = waypoint->to ()->id ();
-        return waypoint->id ();
+        nodeId = (Long) waypoint->to ()->id ();
+        return (Long) waypoint->id ();
       }
 
       Long Graph::createLevelSetEdge(const Long nodeFromId, const Long nodeToId, const char* edgeName, const Long w, const bool isInNodeFrom)
@@ -328,7 +330,7 @@ namespace hpp {
 
         graph::EdgePtr_t edge = from->linkTo (edgeName, to, w, isInNodeFrom,
 					      graph::LevelSetEdge::create);
-        return edge->id ();
+        return (Long) edge->id ();
       }
 
       void Graph::setLevelSetConstraints (const Long edgeId,
@@ -514,7 +516,7 @@ namespace hpp {
             config [iDof] = dofArray[iDof];
           }
           graph::NodePtr_t node = graph_->getNode (config);
-          output = node->id();
+          output = (Long) node->id();
         } catch (std::exception& e) {
           throw Error (e.what());
         }
@@ -536,19 +538,51 @@ namespace hpp {
           Configuration_t config; config.resize (dofArray.length());
           for (std::size_t iDof = 0; iDof < (std::size_t)config.size();
 	       ++iDof) {
-            config [iDof] = dofArray[iDof];
+            config [iDof] = dofArray[(ULong) iDof];
           }
 	  bool res = graph_->getConfigErrorForNode (config, node, err);
 	  floatSeq* e = new floatSeq ();
-	  e->length (err.size ());
+	  e->length ((ULong) err.size ());
 	  for (std::size_t i=0; i < (std::size_t) err.size (); ++i) {
-	    (*e) [i] = err [i];
+	    (*e) [(ULong) i] = err [i];
 	  }
 	  error = e;
 	  return res;
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
 	}
+      }
+
+      void Graph::displayNodeConstraints
+      (hpp::ID nodeId, CORBA::String_out constraints) throw (Error)
+      {
+	graph::GraphComponentPtr_t gc (graph::GraphComponent::get (nodeId));
+	graph::NodePtr_t node (HPP_DYNAMIC_PTR_CAST (graph::Node, gc));
+	if (!node) {
+	  std::ostringstream oss;
+	  oss << "Graph component " << nodeId << " is not a node.";
+	  throw std::logic_error (oss.str ().c_str ());
+	}
+	ConstraintSetPtr_t cs (graph_->configConstraint (node));
+	std::ostringstream oss;
+	oss << (*cs);
+	constraints = oss.str ().c_str ();
+      }
+
+      void Graph::displayEdgeConstraints
+      (hpp::ID edgeId, CORBA::String_out constraints) throw (Error)
+      {
+	graph::GraphComponentPtr_t gc (graph::GraphComponent::get (edgeId));
+	graph::EdgePtr_t edge (HPP_DYNAMIC_PTR_CAST (graph::Edge, gc));
+	if (!edge) {
+	  std::ostringstream oss;
+	  oss << "Graph component " << edgeId << " is not an edge.";
+	  throw std::logic_error (oss.str ().c_str ());
+	}
+	ConstraintSetPtr_t cs (graph_->configConstraint (edge));
+	std::ostringstream oss;
+	oss << (*cs);
+	constraints = oss.str ().c_str ();
       }
 
       void Graph::display (const char* filename)

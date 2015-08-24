@@ -76,7 +76,7 @@ namespace hpp {
 
 	// Fill dof vector with dof array.
 	for (size_type iDof=0; iDof < configDim; ++iDof) {
-	  (*config) [iDof] = dofArray [iDof];
+	  (*config) [iDof] = dofArray [(ULong) iDof];
 	}
 	return config;
       }
@@ -86,7 +86,7 @@ namespace hpp {
 	// Fill dof vector with dof array.
 	vector_t result (dofArray.length ());
 	for (size_type iDof=0; iDof < result.size (); ++iDof) {
-	  result [iDof] = dofArray [iDof];
+	  result [iDof] = dofArray [(ULong) iDof];
 	}
 	return result;
       }
@@ -101,9 +101,20 @@ namespace hpp {
 	throw (hpp::Error)
       {
 	DevicePtr_t robot = getRobotOrThrow (problemSolver_);
+	hppDout (info, *robot);
 	try {
-          const GripperPtr_t& gripper = robot->get <GripperPtr_t> (gripperName);
-          const HandlePtr_t& handle = robot->get <HandlePtr_t> (handleName);
+          GripperPtr_t gripper = robot->get <GripperPtr_t> (gripperName);
+	  if (!gripper) {
+	    std::string msg (std::string ("No gripper with name ") +
+			     std::string (gripperName) + std::string ("."));
+	    throw std::runtime_error (msg.c_str ());
+	  }
+          HandlePtr_t handle = robot->get <HandlePtr_t> (handleName);
+	  if (!handle) {
+	    std::string msg (std::string ("No handle with name ") +
+			     std::string (handleName) + std::string ("."));
+	    throw std::runtime_error (msg.c_str ());
+	  }
 	  DifferentiableFunctionPtr_t constraint =
 	    handle->createGrasp (gripper);
 	  DifferentiableFunctionPtr_t complement =
@@ -165,8 +176,9 @@ namespace hpp {
 	  typedef Container <TriangleList>::ElementMap_t TriangleMap;
 	  const TriangleMap& m = problemSolver_->getAll <TriangleList> ();
 
-	  char** nameList = Names_t::allocbuf(m.size ());
-	  Names_t *jointNames = new Names_t (m.size(), m.size(), nameList);
+	  char** nameList = Names_t::allocbuf((ULong) m.size ());
+	  Names_t *jointNames = new Names_t ((ULong) m.size(), (ULong) m.size(),
+					     nameList);
 
 	  std::size_t rank = 0;
           for (TriangleMap::const_iterator it = m.begin ();
@@ -189,8 +201,9 @@ namespace hpp {
           DevicePtr_t r = getRobotOrThrow (problemSolver_);
 	  const TriangleMap& m = r->getAll <TriangleList> ();
 
-	  char** nameList = Names_t::allocbuf(m.size ());
-	  Names_t *jointNames = new Names_t (m.size(), m.size(), nameList);
+	  char** nameList = Names_t::allocbuf((ULong) m.size ());
+	  Names_t *jointNames = new Names_t ((ULong) m.size(), (ULong) m.size(),
+					     nameList);
 
 	  std::size_t rank = 0;
           for (TriangleMap::const_iterator it = m.begin ();
@@ -283,7 +296,7 @@ namespace hpp {
 	q_ptr->length (size);
 
 	for (std::size_t i=0; i<size; ++i) {
-	  (*q_ptr) [i] = (*config) [i];
+	  (*q_ptr) [(ULong) i] = (*config) [i];
 	}
 	output = q_ptr;
 	return success;
@@ -333,7 +346,7 @@ namespace hpp {
 	q_ptr->length (size);
 
 	for (std::size_t i=0; i<size; ++i) {
-	  (*q_ptr) [i] = (*config) [i];
+	  (*q_ptr) [(ULong) i] = (*config) [i];
 	}
 	output = q_ptr;
 	return success;

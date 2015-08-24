@@ -144,8 +144,24 @@ module hpp {
 	/// \return whether the configuration belongs to the node.
 	/// Call method core::ConstraintSet::isSatisfied for the node
 	/// constraints.
-	boolean getConfigErrorForNode (in floatSeq config, in ID IDnode,
+	boolean getConfigErrorForNode (in floatSeq config, in ID nodeId,
 				       out floatSeq errorVector) raises (Error);
+
+	/// Print set of constraints relative to a node in a string
+	///
+	/// \param config Configuration,
+	/// \param nodeId id of the node.
+	/// \return string displaying constraints
+	void displayNodeConstraints (in ID nodeId, out string constraints)
+	  raises (Error);
+
+	/// Print set of constraints relative to an edge in a string
+	///
+	/// \param config Configuration,
+	/// \param edgeId id of the edge.
+	/// \return string displaying constraints
+	void displayEdgeConstraints (in ID edgeId, out string constraints)
+	  raises (Error);
 
         void display (in string filename)
           raises (Error);
