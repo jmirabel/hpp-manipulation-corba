@@ -141,10 +141,14 @@ namespace hpp {
 	  DifferentiableFunctionPtr_t constraint =
 	    handle->createPreGrasp (gripper);
 	  DifferentiableFunctionPtr_t ineq_positive =
-	    handle->createPreGraspComplement (gripper, 0.023);
-	  problemSolver_->addNumericalConstraint (graspName, constraint);
-	  problemSolver_->addNumericalConstraint (name + "/0_f_0.05", ineq_positive);
-          problemSolver_->comparisonType (name + "/0_f_0.05", DoubleInequality::create (0.05));
+	    handle->createPreGraspComplement (gripper);
+          value_type c = handle->clearance () + gripper->clearance ();
+          value_type width = 2*c + 0.001;
+	  problemSolver_->addNumericalConstraint (name, constraint);
+	  problemSolver_->addNumericalConstraint
+            (name + "/double_ineq", ineq_positive);
+          problemSolver_->comparisonType
+            (name + "/double_ineq", DoubleInequality::create (width));
           problemSolver_->addGrasp(constraint, gripper, handle);
 	} catch (const std::exception& exc) {
 	  throw Error (exc.what ());
