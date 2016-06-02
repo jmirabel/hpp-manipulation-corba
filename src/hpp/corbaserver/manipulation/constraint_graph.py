@@ -341,6 +341,14 @@ class ConstraintGraph (object):
 
         self.graph.setLevelSetFoliation (self.edges [edge], cond_nc, condLJ, param_nc, pdofs, paramLJ)
 
+    @staticmethod
+    ## Build a graph
+    # \return a Initialized ConstraintGraph object
+    def buildGenericGraph (robot, name, grippers, objects, handlesPerObjects, shapesPerObjects, envNames, rules = []):
+        robot.client.manipulation.graph.autoBuild \
+                (name, grippers, objects, handlesPerObjects, shapesPerObjects, envNames, rules)
+        return ConstraintGraph (robot, name, makeGraph = False);
+
     ## Add entry to the local dictionnary
     # \param text plain text
     # \param tex its latex translation
