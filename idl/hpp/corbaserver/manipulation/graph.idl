@@ -26,6 +26,14 @@ module hpp {
     module manipulation {
       typedef sequence <Names_t> Namess_t;
 
+      /// Describe a rule to link or not, a gripper and a handle.
+      struct Rule {
+	string gripper;
+	string handle;
+	boolean link;
+      };
+      typedef sequence<Rule> Rules;
+
       interface Graph {
         /// Initialize the graph of constraints.
         /// \note The composite hpp::manipulation::robot must be completely defined first.
@@ -189,7 +197,7 @@ module hpp {
         intSeq autoBuild (in string graphName,
             in Names_t grippers, in Names_t objects,
             in Namess_t handlesPerObject, in Namess_t shapesPreObject,
-            in Names_t envNames)
+	    in Names_t envNames, in Rules rulesList)
           raises (Error);
 
         void setWeight (in ID edgeID, in long weight)

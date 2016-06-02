@@ -27,6 +27,7 @@ namespace hpp {
   namespace manipulation {
     namespace impl {
       using hpp::corbaserver::manipulation::Namess_t;
+      using hpp::corbaserver::manipulation::Rules;
       using CORBA::Long;
 
       class Graph : public virtual POA_hpp::corbaserver::manipulation::Graph
@@ -148,7 +149,7 @@ namespace hpp {
           virtual intSeq* autoBuild (const char* graphName,
               const Names_t& grippers, const Names_t& objects,
               const Namess_t& handlesPerObject, const Namess_t& shapesPreObject,
-              const Names_t& envNames)
+	      const Names_t& envNames, const Rules& rulesList)
             throw (hpp::Error);
 
           virtual void setWeight (ID edgeId, const Long weight)

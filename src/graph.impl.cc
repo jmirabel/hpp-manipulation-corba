@@ -622,15 +622,23 @@ namespace hpp {
           const Names_t& objects,
           const Namess_t& handlesPerObject,
           const Namess_t& shapesPreObject,
-          const Names_t& envNames)
+          const Names_t& envNames,
+	  const Rules& rulesList)
         throw (hpp::Error)
       {
+	std::vector<graph::helper::Rule> rules(rulesList.length());
+
+	for (int i = 0; i < rulesList.length(); ++i) {
+	  rules[i] = graph::helper::Rule(rulesList[i].gripper.in(), rulesList[i].handle.in(),
+					 rulesList[i].link);
+	}
         graph_ = graph::helper::graphBuilder (
             problemSolver(),
             graphName,
             toStringList (grippers),
             toObjectList (objects, handlesPerObject, shapesPreObject),
-            toStringList (envNames)
+            toStringList (envNames),
+	    rules
             );
         problemSolver()->constraintGraph (graph_);
         problemSolver()->problem()->constraintGraph (graph_);
