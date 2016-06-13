@@ -114,6 +114,9 @@ namespace hpp {
                                        const hpp::Names_t& passiveDofsNames)
             throw (hpp::Error);
 
+	  virtual void resetConstraints(const Long graphComponentId) 
+	    throw (hpp::Error);
+
           virtual void setNumericalConstraintsForPath (const Long nodeId,
               const hpp::Names_t& constraintNames,
               const hpp::Names_t& passiveDofsNames)

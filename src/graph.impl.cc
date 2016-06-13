@@ -459,6 +459,16 @@ namespace hpp {
         }
       }
 
+      void Graph::resetConstraints(const Long graphComponentId) throw (hpp::Error)
+      {
+        graph::GraphComponentPtr_t component = graph::GraphComponent::get(graphComponentId).lock();
+        if (!component)
+          throw Error ("The ID does not exist.");
+
+	component->resetNumericalConstraints();
+	component->resetLockedJoints();
+      }
+
       void Graph::setNumericalConstraintsForPath (const Long nodeId,
           const hpp::Names_t& constraintNames,
           const hpp::Names_t& passiveDofsNames)

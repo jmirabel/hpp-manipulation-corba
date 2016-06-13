@@ -127,6 +127,10 @@ module hpp {
         void setLevelSetFoliation (in long edgeId, in Names_t condNC, in Names_t condLJ, in Names_t paramNC, in Names_t paramPassiveJoints, in Names_t paramLJ)
           raises (Error);
 
+	/// Reset the numerical constraints and the locked joints of a component.
+        /// \param graphComponentId ID of the component.
+	void resetConstraints(in long graphComponentId) raises (Error);
+
         /// Set the numerical constraints of a component.
         /// \param graphComponentId ID of the component.
         /// \param constraintNames is an array of names of constraints in the ProblemSolver map.

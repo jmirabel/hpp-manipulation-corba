@@ -58,8 +58,8 @@ class Robot (object):
     def loadModel (self, robotName, rootJointType):
         if self.load:
             self.client.manipulation.robot.create (self.name)
-        self.insertRobotModel (robotName, rootJointType, self.packageName,
-                self.urdfName, self.urdfSuffix, self.srdfSuffix)
+            self.insertRobotModel (robotName, rootJointType, self.packageName,
+                                   self.urdfName, self.urdfSuffix, self.srdfSuffix)
 
     ## Load robot model and insert it in the device
     #
