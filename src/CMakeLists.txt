@@ -69,6 +69,7 @@ IF (NOT CLIENT_ONLY)
     robot.impl.hh
     server.cc
     client.cc
+    tools.cc
     )
 
   ADD_CUSTOM_TARGET(generate_idl_cpp DEPENDS ${ALL_IDL_CPP_STUBS})

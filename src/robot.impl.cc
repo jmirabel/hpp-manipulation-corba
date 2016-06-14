@@ -31,6 +31,8 @@
 
 #include <hpp/corbaserver/manipulation/server.hh>
 
+#include "tools.hh"
+
 namespace hpp {
   namespace manipulation {
     namespace impl {
@@ -229,13 +231,7 @@ namespace hpp {
               ("Root of subtree with the provided prefix not found");
           const Transform3f& T = joint->positionInParentFrame ();
           double* res = new Transform_;
-          res [0] = T.getTranslation () [0];
-          res [1] = T.getTranslation () [1];
-          res [2] = T.getTranslation () [2];
-          res [3] = T.getQuatRotation () [0];
-          res [4] = T.getQuatRotation () [1];
-          res [5] = T.getQuatRotation () [2];
-          res [6] = T.getQuatRotation () [3];
+          corbaserver::Transform3fTohppTransform (T, res);
           return res;
         } catch (const std::exception& exc) {
           throw Error (exc.what ());
@@ -345,10 +341,7 @@ namespace hpp {
           if (!gripper)
             throw Error ("This gripper does not exists.");
           const fcl::Transform3f& t = gripper->objectPositionInJoint ();
-          for (std::size_t i = 0; i < 3; ++i)
-            position[  i] = t.getTranslation  ()[i];
-          for (std::size_t i = 0; i < 4; ++i)
-            position[3+i] = t.getQuatRotation ()[i];
+          corbaserver::Transform3fTohppTransform (t, position);
           char* name = new char[gripper->joint ()->name ().length()+1];
           strcpy (name, gripper->joint ()->name ().c_str ());
           return name;
@@ -367,10 +360,7 @@ namespace hpp {
           if (!handle)
             throw Error ("This handle does not exists.");
           const fcl::Transform3f& t = handle->localPosition ();
-          for (std::size_t i = 0; i < 3; ++i)
-            position[  i] = t.getTranslation  ()[i];
-          for (std::size_t i = 0; i < 4; ++i)
-            position[3+i] = t.getQuatRotation ()[i];
+          corbaserver::Transform3fTohppTransform (t, position);
           char* name = new char[handle->joint ()->name ().length()+1];
           strcpy (name, handle->joint ()->name ().c_str ());
           return name;

@@ -18,6 +18,9 @@
 #ifndef HPP_MANIPULATION_CORBA_TOOLS_HH
 # define HPP_MANIPULATION_CORBA_TOOLS_HH
 
+# include <hpp/corbaserver/common.hh>
+
+# include <hpp/corbaserver/manipulation/config.hh>
 # include <hpp/manipulation/problem-solver.hh>
 
 namespace hpp {
@@ -59,6 +62,9 @@ namespace hpp {
       }
       return indexes;
     }
+
+    void HPP_MANIPULATION_CORBA_LOCAL Transform3fTohppTransform (const hpp::manipulation::Transform3f& transform,
+        CORBA::Double* config);
   } // namespace corbaserver 
 } // namespace hpp
 
