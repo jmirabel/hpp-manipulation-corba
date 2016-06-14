@@ -292,7 +292,6 @@ namespace hpp {
         freqs = f_ptr;
       }
 
-
       bool Graph::getConfigProjectorStats (ID elmt, ConfigProjStat_out config,
           ConfigProjStat_out path)
         throw (hpp::Error)
@@ -518,6 +517,7 @@ namespace hpp {
       void Graph::getNode (const hpp::floatSeq& dofArray, ID_out output)
         throw (hpp::Error)
       {
+        if (!graph_) throw Error ("There is no graph");
         try {
           vector_t config; config.resize (dofArray.length());
           for (int iDof = 0; iDof < config.size(); iDof++) {
