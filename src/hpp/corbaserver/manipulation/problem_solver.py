@@ -433,8 +433,8 @@ class ProblemSolver (object):
     #  \param startConfig, endConfig: the configurations to link.
     #  \throw Error if steering method fails to create a direct path of if
     #  direct path is not valid
-    def directPath (self, startConfig, endConfig):
-        return self.client.basic.problem.directPath (startConfig, endConfig)
+    def directPath (self, startConfig, endConfig, validate = True):
+        return self.client.basic.problem.directPath (startConfig, endConfig, validate)
 
     ## Get Number of paths
     def numberPaths (self):
