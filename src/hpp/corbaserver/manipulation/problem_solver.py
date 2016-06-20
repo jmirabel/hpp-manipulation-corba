@@ -436,6 +436,10 @@ class ProblemSolver (object):
     def directPath (self, startConfig, endConfig, validate = True):
         return self.client.basic.problem.directPath (startConfig, endConfig, validate)
 
+    ## Apply the path projector to the path
+    def projectPath (self, pathId):
+        return self.client.basic.problem.projectPath (pathId)
+
     ## Get Number of paths
     def numberPaths (self):
         return self.client.basic.problem.numberPaths ()
