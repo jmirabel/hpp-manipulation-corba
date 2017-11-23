@@ -291,6 +291,23 @@ class ConstraintFactoryAbstract:
         return (None, None, None,)
 
 ## Default implementation of ConstraintFactoryAbstract
+#
+# The minimal usage is the following:
+# \code
+# graph = ConstraintGraph (robot, "graph")
+#
+# # Required calls
+# factory = ConstraintGraphFactory (graph)
+# factory.setGrippers (["gripper1", ... ])
+# factory.setObjects (["object1", ], [ [ "object1/handle1", ... ] ], [ [] ])
+#
+# # Optionally
+# factory.environmentContacts (["contact1", ... ])
+# factory.setRules ([ Rule (["gripper1", ..], ["handle1", ...], True), ... ])
+#
+# factory.generate ()
+# # graph is initialized
+# \endcode
 class ConstraintFactory(ConstraintFactoryAbstract):
     gfields = ('grasp', 'graspComplement', 'preGrasp')
     pfields = ('placement', 'placementComplement', 'prePlacement')
@@ -371,24 +388,7 @@ class ConstraintFactory(ConstraintFactoryAbstract):
             Constraints (lockedJoints = ljs),
             Constraints (numConstraints = _removeEmptyConstraints(self.graph.clientBasic.problem, [ pn, ])),)))
 
-## Default implementation of ConstraintGraphFactory
-#
-# The minimal usage is the following:
-# \code
-# graph = ConstraintGraph (robot, "graph")
-#
-# # Required calls
-# factory = ConstraintGraphFactory (graph)
-# factory.setGrippers (["gripper1", ... ])
-# factory.setObjects (["object1", ], [ [ "object1/handle1", ... ] ], [ [] ])
-#
-# # Optionally
-# factory.environmentContacts (["contact1", ... ])
-# factory.setRules ([ Rule (["gripper1", ..], ["handle1", ...], True), ... ])
-#
-# factory.generate ()
-# # graph is initialized
-# \endcode
+## Abstrac class for building a constraint graph
 class ConstraintGraphFactory(GraphFactoryAbstract):
     class StateAndManifold:
         def __init__ (self, factory, grasps, id, name):
