@@ -157,10 +157,12 @@ namespace hpp {
         if (!robot) throw Error ("Build the robot first.");
 	// Create default steering method to store in edges, until we define a
 	// factory for steering methods.
-        graph::GraphPtr_t g = graph::Graph::create(graphName, robot,
+        std::string name (graphName);
+        graph::GraphPtr_t g = graph::Graph::create(name, robot,
             problemSolver()->problem());
         g->maxIterations (problemSolver()->maxIterProjection ());
         g->errorThreshold (problemSolver()->errorThreshold ());
+        problemSolver()->ProblemSolver::container_t::add (name, g);
         problemSolver()->constraintGraph (g);
         problemSolver()->problem()->constraintGraph (g);
         return (Long) g->id ();
@@ -422,12 +424,12 @@ namespace hpp {
             std::string name (condNC [i]);
             edge->insertConditionConstraint
               (HPP_STATIC_PTR_CAST(NumericalConstraint,
-                                   problemSolver()->get
+                                   problemSolver()->core::ProblemSolver::get
                                    <NumericalConstraintPtr_t>(name)->copy ()));
           }
           for (CORBA::ULong i=0; i<condLJ.length (); ++i) {
             std::string name (condLJ [i]);
-            edge->insertConditionConstraint (problemSolver()->get
+            edge->insertConditionConstraint (problemSolver()->core::ProblemSolver::get
                                              <LockedJointPtr_t> (name));
           }
 
@@ -437,13 +439,13 @@ namespace hpp {
             std::string name (paramNC [i]);
             edge->insertParamConstraint (
                 HPP_STATIC_PTR_CAST(NumericalConstraint,
-                problemSolver()->get <NumericalConstraintPtr_t>(name)->copy ()),
+                problemSolver()->core::ProblemSolver::get <NumericalConstraintPtr_t>(name)->copy ()),
                 problemSolver()->passiveDofs (pdofNames [i]));
           }
           for (CORBA::ULong i=0; i<paramLJ.length (); ++i) {
             std::string name (paramLJ [i]);
             edge->insertParamConstraint
-              (problemSolver()->get <LockedJointPtr_t> (name));
+              (problemSolver()->core::ProblemSolver::get <LockedJointPtr_t> (name));
           }
 
           // edge->buildHistogram ();
@@ -579,7 +581,7 @@ namespace hpp {
             for (CORBA::ULong i=0; i<constraintNames.length (); ++i) {
               std::string name (constraintNames [i]);
               component->addLockedJointConstraint
-		(problemSolver()->get <LockedJointPtr_t> (name));
+		(problemSolver()->core::ProblemSolver::get <LockedJointPtr_t> (name));
             }
           } catch (std::exception& err) {
             throw Error (err.what());

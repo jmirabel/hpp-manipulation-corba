@@ -151,9 +151,9 @@ namespace hpp {
         } else if (w == "robotcontact") {
           ret = getRobotOrThrow (problemSolver())->getKeys <JointAndShapes_t, Ret_t> ();
         } else if (w == "envcontact") {
-          ret = problemSolver()->getKeys <JointAndShapes_t, Ret_t> ();
+          ret = problemSolver()->core::ProblemSolver::getKeys <JointAndShapes_t, Ret_t> ();
         } else if (w == "graph") {
-          ret = problemSolver()->getKeys <graph::GraphPtr_t> ();
+          ret = problemSolver()->ProblemSolver::container_t::getKeys <graph::GraphPtr_t, Ret_t> ();
         } else if (w == "type") {
           ret = boost::assign::list_of ("Gripper") ("Handle") ("RobotContact")
             ("EnvContact") ("Graph");
@@ -195,7 +195,7 @@ namespace hpp {
       {
         try {
 	  typedef std::map<std::string, JointAndShapes_t> ShapeMap;
-	  const ShapeMap& m = problemSolver()->map <JointAndShapes_t> ();
+	  const ShapeMap& m = problemSolver()->core::ProblemSolver::map <JointAndShapes_t> ();
 
 	  char** nameList = Names_t::allocbuf((ULong) m.size ());
 	  Names_t *jointNames = new Names_t ((ULong) m.size(), (ULong) m.size(),
@@ -245,7 +245,7 @@ namespace hpp {
       {
         try {
 	  const JointAndShapes_t& js =
-            problemSolver()->get <JointAndShapes_t> (name);
+            problemSolver()->core::ProblemSolver::get <JointAndShapes_t> (name);
 
           return jointAndShapes (js, indexes, points);
 	} catch (const std::exception& exc) {

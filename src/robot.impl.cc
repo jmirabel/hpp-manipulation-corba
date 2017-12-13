@@ -304,7 +304,7 @@ namespace hpp {
                 newShape [i] = M.act (itT->second[i]);
               shapes.push_back (JointAndShape_t (JointPtr_t(), newShape));
             }
-            problemSolver()->add (p + it->first, shapes);
+            problemSolver()->core::ProblemSolver::add (p + it->first, shapes);
           }
 
           copy<HandlePtr_t > (object, robot, p);
@@ -357,7 +357,7 @@ namespace hpp {
                 newShape [i] = M.act (itT->second[i]);
               shapes.push_back (JointAndShape_t (JointPtr_t(), newShape));
             }
-            problemSolver()->add (p + it->first, shapes);
+            problemSolver()->core::ProblemSolver::add (p + it->first, shapes);
           }
 
           copy<HandlePtr_t > (object, robot, p);
