@@ -54,8 +54,11 @@ namespace hpp {
       using graph::EdgePtr_t;
       using graph::LevelSetEdgePtr_t;
       using graph::WaypointEdgePtr_t;
+      using graph::GraphPtr_t;
 
       using corbaServer::floatSeqToConfig;
+
+      typedef ProblemSolver::container_t PSc_t;
 
       namespace {
         typedef core::ProblemSolver CPs_t;
@@ -148,6 +151,20 @@ namespace hpp {
           throw Error (ss.str().c_str());
         }
         return comp;
+      }
+
+      Long Graph::selectGraph(const char* graphName)
+        throw (hpp::Error)
+      {
+        std::string name (graphName);
+        if (!problemSolver()->PSc_t::has <GraphPtr_t> (name))
+        {
+          HPP_THROW(Error, "Graph " << name << " not found.");
+        }
+        graph::GraphPtr_t g = problemSolver()->PSc_t::get <GraphPtr_t> (name);
+        problemSolver()->constraintGraph (g);
+        problemSolver()->problem()->constraintGraph (g);
+        return (Long) g->id ();
       }
 
       Long Graph::createGraph(const char* graphName)

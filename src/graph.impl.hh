@@ -39,6 +39,9 @@ namespace hpp {
             server_ = server;
           }
 
+          virtual Long selectGraph(const char* graphName)
+            throw (hpp::Error);
+
           virtual Long createGraph(const char* graphName)
             throw (hpp::Error);
 

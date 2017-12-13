@@ -35,7 +35,11 @@ module hpp {
       typedef sequence<Rule> Rules;
 
       interface Graph {
-        /// Initialize the graph of constraints.
+        /// Select an already created graph.
+        long selectGraph(in string graphName)
+          raises (Error);
+
+        /// Create a new graph of constraints.
         /// \note The composite hpp::manipulation::robot must be completely defined first.
         long createGraph(in string graphName)
           raises (Error);
