@@ -152,9 +152,11 @@ namespace hpp {
           ret = getRobotOrThrow (problemSolver())->getKeys <JointAndShapes_t, Ret_t> ();
         } else if (w == "envcontact") {
           ret = problemSolver()->getKeys <JointAndShapes_t, Ret_t> ();
+        } else if (w == "graph") {
+          ret = problemSolver()->getKeys <graph::GraphPtr_t> ();
         } else if (w == "type") {
           ret = boost::assign::list_of ("Gripper") ("Handle") ("RobotContact")
-            ("EnvContact");
+            ("EnvContact") ("Graph");
         } else {
           throw Error (("Type \"" + std::string(what) + "\" not known").c_str());
         }
