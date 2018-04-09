@@ -170,8 +170,9 @@ class GraphFactoryAbstract:
     # \param ig: index if the grasp vector that changes, i.e. such that
     #   - \f$ stateFrom.grasps[i_g] \neq stateTo.grasps[i_g] \f$
     #   - \f$ \forall i \neq i_g, stateFrom.grasps[i] = stateTo.grasps[i] \f$
+    # \param depth: current depth, to be used to determine the node priority.
     @abc.abstractmethod
-    def makeTransition(self, stateFrom, stateTo, ig): pass
+    def makeTransition(self, stateFrom, stateTo, ig, depth): pass
 
     ## \}
 
@@ -228,7 +229,7 @@ class GraphFactoryAbstract:
                 if nextIsAllowed: next = self._makeState (nGrasps, depth + 1)
 
                 if isAllowed and nextIsAllowed:
-                    self.makeTransition (current, next, isg)
+                    self.makeTransition (current, next, isg, depth)
 
                 self._recurse (ngrippers, nhandles, nGrasps, depth + 2)
 
@@ -306,6 +307,9 @@ class ConstraintFactory(ConstraintFactoryAbstract):
         ## Select whether placement should be strict or relaxed.
         # \sa buildStrictPlacement, buildRelaxedPlacement
         self.strict = False
+        ## Says whether waypoint edge should be built using only
+        #  normal edges.
+        self.buildWaypointEdge = True
 
     ## Calls ConstraintGraph.createGraph and ConstraintGraph.createPreGrasp
     ## \param g gripper string
@@ -446,7 +450,7 @@ class ConstraintGraphFactory(GraphFactoryAbstract):
         self.graph.createEdge (state.name, state.name, n, weight = 0, isInNode = state.name)
         self.graph.addConstraints (edge = n, constraints = state.foliation)
 
-    def makeTransition(self, stateFrom, stateTo, ig):
+    def makeTransition(self, stateFrom, stateTo, ig, depth):
         sf = stateFrom
         st = stateTo
         grasps  = sf.grasps
@@ -503,19 +507,28 @@ class ConstraintGraphFactory(GraphFactoryAbstract):
         # Link waypoints
         transitions = names[:]
         if nWaypoints > 0:
-            self.graph.createWaypointEdge (sf.name, st.name, names[0], nWaypoints, automaticBuilder = False)
-            self.graph.createWaypointEdge (st.name, sf.name, names[1], nWaypoints, automaticBuilder = False)
-            wTransitions = []
-            for i in range(nTransitions):
-                nf = "{0}_{1}{2}".format(names[0], i, i+1)
-                nb = "{0}_{2}{1}".format(names[1], i, i+1)
-                self.graph.createEdge (wStates[i], wStates[i+1], nf, -1)
-                self.graph.createEdge (wStates[i+1], wStates[i], nb, -1)
-                self.graph.graph.setWaypoint (self.graph.edges[transitions[0]],
-                        i, self.graph.edges[nf], self.graph.nodes[wStates[i+1]])
-                self.graph.graph.setWaypoint (self.graph.edges[transitions[1]],
-                        nTransitions - 1 - i, self.graph.edges[nb], self.graph.nodes[wStates[i]])
-                wTransitions.append ( (nf, nb) )
+            if self.buildWaypointEdge:
+                self.graph.createWaypointEdge (sf.name, st.name, names[0], nWaypoints, automaticBuilder = False)
+                self.graph.createWaypointEdge (st.name, sf.name, names[1], nWaypoints, automaticBuilder = False)
+                wTransitions = []
+                for i in range(nTransitions):
+                    nf = "{0}_{1}{2}".format(names[0], i, i+1)
+                    nb = "{0}_{2}{1}".format(names[1], i, i+1)
+                    self.graph.createEdge (wStates[i], wStates[i+1], nf, -1)
+                    self.graph.createEdge (wStates[i+1], wStates[i], nb, -1)
+                    self.graph.graph.setWaypoint (self.graph.edges[transitions[0]],
+                            i, self.graph.edges[nf], self.graph.nodes[wStates[i+1]])
+                    self.graph.graph.setWaypoint (self.graph.edges[transitions[1]],
+                            nTransitions - 1 - i, self.graph.edges[nb], self.graph.nodes[wStates[i]])
+                    wTransitions.append ( (nf, nb) )
+            else:
+                wTransitions = []
+                for i in range(nTransitions):
+                    nf = "{0}_{1}{2}".format(names[0], i, i+1)
+                    nb = "{0}_{2}{1}".format(names[1], i, i+1)
+                    self.graph.createEdge (wStates[i], wStates[i+1], nf, 1)
+                    self.graph.createEdge (wStates[i+1], wStates[i], nb, 1)
+                    wTransitions.append ( (nf, nb) )
 
             # Set states
             M = 0 if gc.empty() else 1 + pregrasp
