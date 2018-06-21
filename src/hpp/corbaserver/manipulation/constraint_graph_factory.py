@@ -192,6 +192,15 @@ class GraphFactoryAbstract:
                 return True
         return False
 
+    def _otherGraspOnObject(self, grasps, object):
+        for h in self.handlesPerObjects[object]:
+            try:
+                return grasps.index (h)
+            except ValueError:
+                continue
+        raise ValueError ("No other grasp on object")
+
+
     def _stateName (self, grasps, abbrev = False):
         sepGH = "-" if abbrev else " grasps "
         sep = ":" if abbrev else " : "
