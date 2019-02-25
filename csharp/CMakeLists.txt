@@ -19,8 +19,13 @@ IF(NOT IIOPCHANNEL_LIB)
 ENDIF()
 FIND_PATH(HPP_CORBASERVER_IDL_DIR hpp/corbaserver/common.idl
 	PATH_SUFFIXES share/idl)
+FIND_FILE(HPP_CORBASERVER_IDL_LIB hpp-corbaserver-idl.dll
+	PATH_SUFFIXES bin)
 IF(NOT HPP_CORBASERVER_IDL_DIR)
 	MESSAGE(FATAL_ERROR "Could not find hpp/corbaserver/common.idl")
+ENDIF()
+IF(NOT HPP_CORBASERVER_IDL_LIB)
+	MESSAGE(FATAL_ERROR "Could not find hpp-corbaserver-idl.dll")
 ENDIF()
 
 SET(IDL_DIR "${CMAKE_SOURCE_DIR}/../idl")
@@ -36,6 +41,7 @@ ADD_CUSTOM_COMMAND(
 	COMMAND "${IIOP_IDL}"
 	ARGS -idir "${IDL_DIR}/../idl"
 	-idir "${HPP_CORBASERVER_IDL_DIR}"
+	-r "${HPP_CORBASERVER_IDL_LIB}"
 	-o ${CMAKE_BINARY_DIR} ${PROJECT_NAME}-idl
 	${IDL_FILES})
 
