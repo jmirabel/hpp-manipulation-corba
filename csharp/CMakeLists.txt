@@ -1,0 +1,56 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.2)
+
+PROJECT(hpp-manipulation-corba LANGUAGES CSharp)
+
+SET(VISUAL_STUDIO_DOTNET_FRAMEWORK_VERSION "v4.6.1" CACHE STRING "Set the version of the .NET framework")
+
+# Generate CLS from IDL
+FIND_PROGRAM(IIOP_IDL "IDL TO CLS Compiler CS.exe")
+FIND_FILE(IIOPCHANNEL_LIB IIOPChannel.dll
+		PATH_SUFFIXES bin lib)
+FIND_FILE(IIOPCHANNEL_nunit_LIB nunit.framework.dll
+		PATH_SUFFIXES bin lib)
+
+IF(NOT IIOP_IDL)
+	MESSAGE(FATAL_ERROR "\"IDL TO CLS Compiler CS.exe\" not found.")
+ENDIF()
+IF(NOT IIOPCHANNEL_LIB)
+	MESSAGE(FATAL_ERROR "Could not find IIOPChannel")
+ENDIF()
+FIND_PATH(HPP_CORBASERVER_IDL_DIR hpp/corbaserver/common.idl
+	PATH_SUFFIXES share/idl)
+IF(NOT HPP_CORBASERVER_IDL_DIR)
+	MESSAGE(FATAL_ERROR "Could not find hpp/corbaserver/common.idl")
+ENDIF()
+
+SET(IDL_DIR "${CMAKE_SOURCE_DIR}/../idl")
+SET(IDL_FILES
+	"${IDL_DIR}/hpp/corbaserver/manipulation/gcommon.idl"
+	"${IDL_DIR}/hpp/corbaserver/manipulation/robot.idl"
+	"${IDL_DIR}/hpp/corbaserver/manipulation/problem.idl"
+	"${IDL_DIR}/hpp/corbaserver/manipulation/graph.idl"
+	)
+
+ADD_CUSTOM_COMMAND(
+	OUTPUT ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-idl.dll
+	COMMAND "${IIOP_IDL}"
+	ARGS -idir "${IDL_DIR}/../idl"
+	-idir "${HPP_CORBASERVER_IDL_DIR}"
+	-o ${CMAKE_BINARY_DIR} ${PROJECT_NAME}-idl
+	${IDL_FILES})
+
+ADD_CUSTOM_TARGET(generate_idl_csharp DEPENDS ${CMAKE_BINARY_DIR}/${PROJECT_NAME}-idl.dll)
+
+ADD_LIBRARY(${PROJECT_NAME} SHARED src/client.cs)
+SET_TARGET_PROPERTIES(${PROJECT_NAME}
+	PROPERTIES
+	VS_DOTNET_REFERENCE_IIOP_Channel "${IIOPCHANNEL_LIB}"
+	VS_DOTNET_REFERENCE_IIOP_Channel_nunit "${IIOPCHANNEL_nunit_LIB}"
+	VS_DOTNET_REFERENCE_HPP_MANIPULATION_CORBASERVER_IDL "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-idl.dll"
+	VS_DOTNET_TARGET_FRAMEWORK_VERSION ${VISUAL_STUDIO_DOTNET_FRAMEWORK_VERSION}
+	)
+ADD_DEPENDENCIES(${PROJECT_NAME} generate_idl_csharp)
+
+INSTALL(TARGETS ${PROJECT_NAME} DESTINATION bin)
+INSTALL(FILES "${CMAKE_BINARY_DIR}/${PROJECT_NAME}-idl.dll" DESTINATION bin)
+INSTALL(FILES ${IDL_FILES} DESTINATION share/idl/hpp/corbaserver/manipulation)
